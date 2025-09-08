@@ -71,7 +71,7 @@ class _GoodsPageState extends State<GoodsPage> {
                   );
                 }
                 Navigator.pop(context);
-                setState(() {}); // Refresh list after adding
+                setState(() {}); 
               } catch (e) {
                 if (mounted) {
                   ScaffoldMessenger.of(context)
@@ -140,7 +140,7 @@ class _GoodsPageState extends State<GoodsPage> {
                   );
                 }
                 Navigator.pop(context);
-                setState(() {}); // Refresh list after updating
+                setState(() {}); 
               } catch (e) {
                 if (mounted) {
                   ScaffoldMessenger.of(context)
@@ -159,7 +159,7 @@ class _GoodsPageState extends State<GoodsPage> {
     try {
       await goodsDb.deleteGoods(id);
       if (mounted) {
-        setState(() {}); // Refresh list after deleting
+        setState(() {}); 
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text("Goods deleted successfully")),
         );
@@ -174,15 +174,14 @@ class _GoodsPageState extends State<GoodsPage> {
 
   @override
   Widget build(BuildContext context) {
-    final uid = authService.getCurrentUserUid();
+    final currentUid  = authService.getCurrentUserUid();
 
     return Stack(
       children: [
-        // Goods List
         Positioned.fill(
           top: 80,
           child: StreamBuilder(
-            stream: goodsDb.goodsTable.stream(primaryKey: ['id']).eq('user_id', uid!),
+            stream: goodsDb.goodsTable.stream(primaryKey: ['id']),
             builder: (context, snapshot) {
               if (!snapshot.hasData) {
                 return const Center(child: CircularProgressIndicator());
@@ -191,11 +190,13 @@ class _GoodsPageState extends State<GoodsPage> {
               final goods = snapshot.data!;
 
               return ListView.builder(
-                padding: const EdgeInsets.only(bottom: 80), // Leave space for FAB
+                padding: const EdgeInsets.only(bottom: 80), 
                 itemCount: goods.length,
                 itemBuilder: (context, index) {
                   final item = goods[index];
                   final id = item['id'];
+                  final isOwner = item['user_id'] == currentUid ;
+
 
                   return Card(
                     color: Color.fromARGB(255, 88, 236, 130),
@@ -208,7 +209,6 @@ class _GoodsPageState extends State<GoodsPage> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          // Show image if URL exists
                           if ((item['image_url'] ?? '').isNotEmpty)
                             ClipRRect(
                               borderRadius: BorderRadius.circular(12),
@@ -237,6 +237,7 @@ class _GoodsPageState extends State<GoodsPage> {
                           Text(item['description'] ?? ''),
                           const SizedBox(height: 4),
                           Text("Price: \$${item['price'] ?? ''}"),
+                          if(isOwner)
                           Row(
                             mainAxisAlignment: MainAxisAlignment.end,
                             children: [
@@ -260,7 +261,6 @@ class _GoodsPageState extends State<GoodsPage> {
           ),
         ),
 
-        // Page Title
         const Positioned(
           top: -5,
           left: 20,
@@ -276,14 +276,19 @@ class _GoodsPageState extends State<GoodsPage> {
             ),
           ),
         ),
-
-        // Floating Action Button
         Positioned(
-          bottom: 20,
+          bottom: 22,
           right: 20,
-          child: FloatingActionButton(
-            onPressed: addNewGoods,
-            child: const Icon(Icons.add),
+          child: Material(
+            borderRadius: BorderRadius.circular(20),
+            elevation: 17,
+            shadowColor:  const Color.fromARGB(255,17,35,22),
+            child: FloatingActionButton(
+              onPressed: addNewGoods,
+              backgroundColor: const Color.fromARGB(255, 88, 236, 130),
+              foregroundColor: const Color.fromARGB(255,17,35,22),
+              child: const Icon(Icons.add),
+            ),
           ),
         ),
       ],

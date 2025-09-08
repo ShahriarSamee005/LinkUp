@@ -13,7 +13,6 @@ class _HomePageState extends State<HomePage> {
   int _currentIndex = 0;
 
   final List<Widget> _pages = [
-    // Goods Page wrapped with gradient container
     Container(
       padding: const EdgeInsets.all(16),
       decoration: const BoxDecoration(
@@ -32,6 +31,7 @@ class _HomePageState extends State<HomePage> {
       ),
       child: const GoodsPage(),
     ),
+
     Container(
       padding: const EdgeInsets.all(16),
       decoration: const BoxDecoration(
@@ -123,12 +123,9 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       body: Stack(
         children: [
-          // Background image
           Positioned.fill(
             child: Image.asset("assets/images/appbgG4.jpg", fit: BoxFit.fill),
           ),
-
-          // Gradient Container for content
           Positioned(
             top: 100,
             bottom: 0,
@@ -136,8 +133,6 @@ class _HomePageState extends State<HomePage> {
             right: 0,
             child: _pages[_currentIndex],
           ),
-
-          // Top Row: Logo + Profile Button
           Positioned(
             top: -30,
             left: 20,
@@ -145,11 +140,12 @@ class _HomePageState extends State<HomePage> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const SizedBox(width: 30), // spacer for centering logo
+                const SizedBox(width: 30), 
                 Image.asset(
                   'assets/images/linkUpLogo.png',
-                  height: height * 0.2, // fixed height to keep it at top
+                  height: height * 0.2, 
                 ),
+
                 IconButton(
                   icon: const Icon(
                     Icons.person,
@@ -173,12 +169,7 @@ class _HomePageState extends State<HomePage> {
 
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
-        backgroundColor: const Color.fromARGB(
-          255,
-          17,
-          35,
-          22,
-        ), // welcome card color
+        backgroundColor: const Color.fromARGB(255,17,35,22), 
         selectedItemColor: const Color.fromARGB(255, 88, 236, 130),
         unselectedItemColor: Colors.white54,
         type: BottomNavigationBarType.fixed,

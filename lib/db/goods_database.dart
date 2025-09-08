@@ -5,7 +5,6 @@ class GoodsDatabase {
   final goodsTable = Supabase.instance.client.from('goods');
   final authService = AuthService();
 
-  // Insert a new goods item
   Future<void> insertGoods({
   required String title,
   required String description,
@@ -23,7 +22,6 @@ class GoodsDatabase {
     });
   }
 
-  // Update an existing goods item
   Future<void> updateGoods({
   required dynamic id,
   String? title,
@@ -31,7 +29,8 @@ class GoodsDatabase {
   double? price,
   String? imageUrl,
 }) async {
-  
+    final uid = authService.getCurrentUserUid();
+  if (uid == null) throw Exception("No authenticated user found");
     final Map<String, dynamic> updates = {};
     if (title != null) updates['title'] = title;
     if (description != null) updates['description'] = description;
@@ -43,15 +42,19 @@ class GoodsDatabase {
     }
   }
 
-  // Delete a goods item
-  Future<void> deleteGoods(dynamic goodsId) async {
-    await goodsTable.delete().eq('id', goodsId);
-  }
+Future<void> deleteGoods(dynamic id) async {
+  final uid = authService.getCurrentUserUid();
+  if (uid == null) throw Exception("No authenticated user found");
 
-  // Fetch all goods items
+  await goodsTable
+      .delete()
+      .eq('id', id)
+      .eq('user_id', uid); 
+}
+
   Future<List<Map<String, dynamic>>> getAllGoods() async {
     final response = await goodsTable.select().order('created_at', ascending: false);
-    final data = response as List<dynamic>; // Supabase 1.0+ returns List<dynamic>
+    final data = response as List<dynamic>;
     return data.cast<Map<String, dynamic>>();
   }
 }

@@ -26,7 +26,7 @@ class WelcomPage extends StatelessWidget {
             child: Card(
               color: const Color.fromARGB(255, 17, 35, 22),
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadiusGeometry.circular(20)
+                borderRadius: BorderRadius.circular(20),
               ),
               elevation: 10,
               child: Padding(

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:link_up/Auth/aut_service.dart';
+import 'package:link_up/utils/validator.dart';
 import 'login_page.dart';
 
 class RegisterPage extends StatefulWidget {
@@ -15,37 +16,61 @@ class _RegisterPageState extends State<RegisterPage> {
   final _confirmPasswordController = TextEditingController(); 
   final authService = AuthService();
 
-  void signUp() async{
-    final email = _emailController.text;
-    final password = _passwordController.text;
-    final confirmPassword = _confirmPasswordController.text;
+void signUp() async {
+  final email = _emailController.text.trim();
+  final password = _passwordController.text;
+  final confirmPassword = _confirmPasswordController.text;
 
-    if(password != confirmPassword)
-    {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Password didn't match! Pleas re enter your password")));
-      return;
-    }
+  if (!isValidEmail(email)) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text("Please enter a valid email address.")),
+    );
+    return;
+  }
 
-    try{
-      await authService.signUpWithEmailPassword(email, password);
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Registration Successful")),
-        );
-         Navigator.pushReplacement(
+  if (!isValidPassword(password)) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text("Password must be at least 6 characters and include a number."),
+      ),
+    );
+    return;
+  }
+
+if(password != confirmPassword) {
+  ScaffoldMessenger.of(context).showSnackBar(
+    const SnackBar(content: Text("Passwords didn't match! Please re-enter your password"))
+  );
+  return;
+}
+
+if(password.length < 6) {
+  ScaffoldMessenger.of(context).showSnackBar(
+    const SnackBar(content: Text("Password must be at least 6 characters"))
+  );
+  return;
+}
+
+  try {
+    await authService.signUpWithEmailPassword(email, password);
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Registration Successful")),
+      );
+
+      Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => const LoginPage()),
       );
-    } 
     }
-    catch(e){
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Error: $e")),
-        );
-      }
-      }
+  } catch (e) {
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Error: $e")),
+      );
+    }
   }
+}
 
   @override
   Widget build(BuildContext context) {
