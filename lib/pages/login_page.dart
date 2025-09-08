@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:link_up/Auth/aut_service.dart';
 import 'package:link_up/pages/home_page.dart';
 import 'package:link_up/pages/register_page.dart' show RegisterPage;
+import 'package:link_up/pages/welcom_page.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -57,7 +58,12 @@ class _LoginPageState extends State<LoginPage> {
               children: [
                 IconButton(
                   onPressed: () {
-                    Navigator.pop(context);
+                    Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => const WelcomPage(),
+                                  ),
+                                );
                   },
                   icon: const Icon(Icons.arrow_back, color: Colors.white),
                 ),

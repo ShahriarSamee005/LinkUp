@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:link_up/pages/goods_page.dart';
 import 'package:link_up/pages/profile_page.dart';
 
 class HomePage extends StatefulWidget {
@@ -12,6 +13,7 @@ class _HomePageState extends State<HomePage> {
   int _currentIndex = 0;
 
   final List<Widget> _pages = [
+    // Goods Page wrapped with gradient container
     Container(
       padding: const EdgeInsets.all(16),
       decoration: const BoxDecoration(
@@ -28,16 +30,7 @@ class _HomePageState extends State<HomePage> {
           topRight: Radius.circular(50),
         ),
       ),
-      child: const Center(
-        child: Text(
-          "Buy/Sell Used Goods",
-          style: TextStyle(
-            color: Color.fromARGB(255, 88, 236, 130),
-            fontSize: 22,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-      ),
+      child: const GoodsPage(),
     ),
     Container(
       padding: const EdgeInsets.all(16),
@@ -132,10 +125,7 @@ class _HomePageState extends State<HomePage> {
         children: [
           // Background image
           Positioned.fill(
-            child: Image.asset(
-              "assets/images/appbgG4.jpg",
-              fit: BoxFit.fill,
-            ),
+            child: Image.asset("assets/images/appbgG4.jpg", fit: BoxFit.fill),
           ),
 
           // Gradient Container for content
@@ -158,7 +148,7 @@ class _HomePageState extends State<HomePage> {
                 const SizedBox(width: 30), // spacer for centering logo
                 Image.asset(
                   'assets/images/linkUpLogo.png',
-                  height: height*0.2, // fixed height to keep it at top
+                  height: height * 0.2, // fixed height to keep it at top
                 ),
                 IconButton(
                   icon: const Icon(
@@ -170,7 +160,8 @@ class _HomePageState extends State<HomePage> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => const ProfilePage()),
+                        builder: (context) => const ProfilePage(),
+                      ),
                     );
                   },
                 ),
@@ -182,7 +173,12 @@ class _HomePageState extends State<HomePage> {
 
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
-        backgroundColor: const Color.fromARGB(255, 17, 35, 22), // welcome card color
+        backgroundColor: const Color.fromARGB(
+          255,
+          17,
+          35,
+          22,
+        ), // welcome card color
         selectedItemColor: const Color.fromARGB(255, 88, 236, 130),
         unselectedItemColor: Colors.white54,
         type: BottomNavigationBarType.fixed,
@@ -196,18 +192,9 @@ class _HomePageState extends State<HomePage> {
             icon: Icon(Icons.shopping_cart),
             label: "Goods",
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.house),
-            label: "Housing",
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.school),
-            label: "Tuition",
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.work),
-            label: "Jobs",
-          ),
+          BottomNavigationBarItem(icon: Icon(Icons.house), label: "Housing"),
+          BottomNavigationBarItem(icon: Icon(Icons.school), label: "Tuition"),
+          BottomNavigationBarItem(icon: Icon(Icons.work), label: "Jobs"),
         ],
       ),
     );

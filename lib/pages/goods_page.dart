@@ -31,24 +31,34 @@ class _GoodsPageState extends State<GoodsPage> {
         content: SingleChildScrollView(
           child: Column(
             children: [
-              TextField(controller: _titleController, decoration: const InputDecoration(labelText: "Title")),
-              TextField(controller: _descriptionController, decoration: const InputDecoration(labelText: "Description")),
-              TextField(controller: _priceController, decoration: const InputDecoration(labelText: "Price"), keyboardType: TextInputType.number),
-              TextField(controller: _imageUrlController, decoration: const InputDecoration(labelText: "Image URL")),
+              TextField(
+                controller: _titleController,
+                decoration: const InputDecoration(labelText: "Title"),
+              ),
+              TextField(
+                controller: _descriptionController,
+                decoration: const InputDecoration(labelText: "Description"),
+              ),
+              TextField(
+                controller: _priceController,
+                decoration: const InputDecoration(labelText: "Price"),
+                keyboardType: TextInputType.number,
+              ),
+              TextField(
+                controller: _imageUrlController,
+                decoration: const InputDecoration(labelText: "Image URL"),
+              ),
             ],
           ),
         ),
         actions: [
           TextButton(
-            onPressed: () {
-              Navigator.pop(context);
-            },
+            onPressed: () => Navigator.pop(context),
             child: const Text("Cancel"),
           ),
           TextButton(
             onPressed: () async {
               try {
-                // Adapted to named parameters of GoodsDatabase.insertGoods
                 await goodsDb.insertGoods(
                   title: _titleController.text,
                   description: _descriptionController.text,
@@ -61,11 +71,11 @@ class _GoodsPageState extends State<GoodsPage> {
                   );
                 }
                 Navigator.pop(context);
+                setState(() {}); // Refresh list after adding
               } catch (e) {
                 if (mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text("Error: $e")),
-                  );
+                  ScaffoldMessenger.of(context)
+                      .showSnackBar(SnackBar(content: Text("Error: $e")));
                 }
               }
             },
@@ -89,24 +99,34 @@ class _GoodsPageState extends State<GoodsPage> {
         content: SingleChildScrollView(
           child: Column(
             children: [
-              TextField(controller: _titleController, decoration: const InputDecoration(labelText: "Title")),
-              TextField(controller: _descriptionController, decoration: const InputDecoration(labelText: "Description")),
-              TextField(controller: _priceController, decoration: const InputDecoration(labelText: "Price"), keyboardType: TextInputType.number),
-              TextField(controller: _imageUrlController, decoration: const InputDecoration(labelText: "Image URL")),
+              TextField(
+                controller: _titleController,
+                decoration: const InputDecoration(labelText: "Title"),
+              ),
+              TextField(
+                controller: _descriptionController,
+                decoration: const InputDecoration(labelText: "Description"),
+              ),
+              TextField(
+                controller: _priceController,
+                decoration: const InputDecoration(labelText: "Price"),
+                keyboardType: TextInputType.number,
+              ),
+              TextField(
+                controller: _imageUrlController,
+                decoration: const InputDecoration(labelText: "Image URL"),
+              ),
             ],
           ),
         ),
         actions: [
           TextButton(
-            onPressed: () {
-              Navigator.pop(context);
-            },
+            onPressed: () => Navigator.pop(context),
             child: const Text("Cancel"),
           ),
           TextButton(
             onPressed: () async {
               try {
-                // Adapted to named parameters of GoodsDatabase.updateGoods
                 await goodsDb.updateGoods(
                   id: id,
                   title: _titleController.text,
@@ -120,11 +140,11 @@ class _GoodsPageState extends State<GoodsPage> {
                   );
                 }
                 Navigator.pop(context);
+                setState(() {}); // Refresh list after updating
               } catch (e) {
                 if (mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text("Error: $e")),
-                  );
+                  ScaffoldMessenger.of(context)
+                      .showSnackBar(SnackBar(content: Text("Error: $e")));
                 }
               }
             },
@@ -139,16 +159,15 @@ class _GoodsPageState extends State<GoodsPage> {
     try {
       await goodsDb.deleteGoods(id);
       if (mounted) {
-        setState(() {});
+        setState(() {}); // Refresh list after deleting
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text("Goods deleted successfully")),
         );
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Error: $e")),
-        );
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text("Error: $e")));
       }
     }
   }
@@ -157,60 +176,117 @@ class _GoodsPageState extends State<GoodsPage> {
   Widget build(BuildContext context) {
     final uid = authService.getCurrentUserUid();
 
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text("Goods Page"),
-        centerTitle: true,
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: addNewGoods,
-        child: const Icon(Icons.add),
-      ),
-      body: StreamBuilder(
-        stream: goodsDb.goodsTable.stream(primaryKey: ['id']).eq('user_id', uid!),
-        builder: (context, snapshot) {
-          if (!snapshot.hasData) {
-            return const Center(child: CircularProgressIndicator());
-          }
+    return Stack(
+      children: [
+        // Goods List
+        Positioned.fill(
+          top: 80,
+          child: StreamBuilder(
+            stream: goodsDb.goodsTable.stream(primaryKey: ['id']).eq('user_id', uid!),
+            builder: (context, snapshot) {
+              if (!snapshot.hasData) {
+                return const Center(child: CircularProgressIndicator());
+              }
 
-          final goods = snapshot.data!;
+              final goods = snapshot.data!;
 
-          return ListView.builder(
-            itemCount: goods.length,
-            itemBuilder: (context, index) {
-              final item = goods[index];
-              final id = item['id'];
+              return ListView.builder(
+                padding: const EdgeInsets.only(bottom: 80), // Leave space for FAB
+                itemCount: goods.length,
+                itemBuilder: (context, index) {
+                  final item = goods[index];
+                  final id = item['id'];
 
-              return Card(
-                child: ListTile(
-                  title: Text(item['title'] ?? ''),
-                  subtitle: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(item['description'] ?? ''),
-                      Text("Price: \$${item['price'] ?? ''}"),
-                      Text("Image URL: ${item['image_url'] ?? ''}"),
-                    ],
-                  ),
-                  trailing: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      IconButton(
-                        onPressed: () => updateGoods(id, item),
-                        icon: const Icon(Icons.edit),
+                  return Card(
+                    color: Color.fromARGB(255, 88, 236, 130),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // Show image if URL exists
+                          if ((item['image_url'] ?? '').isNotEmpty)
+                            ClipRRect(
+                              borderRadius: BorderRadius.circular(12),
+                              child: Image.network(
+                                item['image_url'],
+                                height: 150,
+                                width: double.infinity,
+                                fit: BoxFit.cover,
+                                errorBuilder: (context, error, stackTrace) {
+                                  return const SizedBox(
+                                    height: 150,
+                                    child: Center(child: Text("Image not available")),
+                                  );
+                                },
+                              ),
+                            ),
+                          const SizedBox(height: 8),
+                          Text(
+                            item['title'] ?? '',
+                            style: const TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(item['description'] ?? ''),
+                          const SizedBox(height: 4),
+                          Text("Price: \$${item['price'] ?? ''}"),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              IconButton(
+                                onPressed: () => updateGoods(id, item),
+                                icon: const Icon(Icons.edit),
+                              ),
+                              IconButton(
+                                onPressed: () => deleteGoods(id),
+                                icon: const Icon(Icons.delete),
+                              ),
+                            ],
+                          ),
+                        ],
                       ),
-                      IconButton(
-                        onPressed: () => deleteGoods(id),
-                        icon: const Icon(Icons.delete),
-                      ),
-                    ],
-                  ),
-                ),
+                    ),
+                  );
+                },
               );
             },
-          );
-        },
-      ),
+          ),
+        ),
+
+        // Page Title
+        const Positioned(
+          top: -5,
+          left: 20,
+          right: 20,
+          child: Center(
+            child: Text(
+              "Buy & Sell",
+              style: TextStyle(
+                fontSize: 28,
+                fontWeight: FontWeight.bold,
+                color: Color.fromARGB(255, 88, 236, 130),
+              ),
+            ),
+          ),
+        ),
+
+        // Floating Action Button
+        Positioned(
+          bottom: 20,
+          right: 20,
+          child: FloatingActionButton(
+            onPressed: addNewGoods,
+            child: const Icon(Icons.add),
+          ),
+        ),
+      ],
     );
   }
 }

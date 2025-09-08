@@ -31,6 +31,7 @@ class GoodsDatabase {
   double? price,
   String? imageUrl,
 }) async {
+  
     final Map<String, dynamic> updates = {};
     if (title != null) updates['title'] = title;
     if (description != null) updates['description'] = description;
